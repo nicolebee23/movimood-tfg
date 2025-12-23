@@ -1,0 +1,28 @@
+/* Estilos para los botones de mood */
+.boton-mood {
+  background-color: #f0f0f0;
+  border: 2px solid #6a0dad;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s;
+}
+
+.boton-mood:hover {
+  background-color: #6a0dad;
+  color: white;
+  transform: scale(1.1);
+}
+
+.emoji-mood {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.texto-mood {
+  display: block;
+  font-weight: bold;
+}
