@@ -26,3 +26,10 @@
   display: block;
   font-weight: bold;
 }
+/* Estilo cuando el botón está seleccionado */
+.boton-mood.seleccionado {
+  background-color: #6a0dad;
+  color: white;
+  border: 3px solid #4b0082;
+  transform: scale(1.05);
+}
