@@ -17,3 +17,7 @@ body {
 #root {
   min-height: 100vh;
 }
+/* Ajuste para que Navbar no tape contenido */
+body {
+  padding-top: 80px;
+}
