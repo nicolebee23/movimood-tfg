@@ -1,15 +1,22 @@
 import '../App.css';
 import BotonMood from '../componentes/BotonMood';
+import SliderAnios from '../componentes/SliderAnios';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Cuestionario() {
-  // Estados para guardar las respuestas del cuestionario
+  const navigate = useNavigate();
+  
+  // Estado para controlar en qué paso estamos (1, 2, 3, 4)
+  const [pasoActual, setPasoActual] = useState(1);
+  
+  // Estados para las respuestas
   const [moodSeleccionado, setMoodSeleccionado] = useState('');
+  const [aniosSeleccionados, setAniosSeleccionados] = useState({ min: 1980, max: 2025 });
   const [duracionSeleccionada, setDuracionSeleccionada] = useState('');
-  const [epocaSeleccionada, setEpocaSeleccionada] = useState('');
   const [generoSeleccionado, setGeneroSeleccionado] = useState('');
 
-  // Arrays con las opciones de cada pregunta
+  // Datos de cada pregunta
   const listaMoods = [
     { emoji: '😊', texto: 'Feliz' },
     { emoji: '😢', texto: 'Triste' },
@@ -24,13 +31,6 @@ function Cuestionario() {
     { emoji: '🎬', texto: 'Larga', detalle: '> 120 min' }
   ];
 
-  const listaEpocas = [
-    { emoji: '📼', texto: 'Clásicas', detalle: 'Antes 1980' },
-    { emoji: '🎸', texto: '80s-90s', detalle: '1980-1999' },
-    { emoji: '💿', texto: '2000s', detalle: '2000-2010' },
-    { emoji: '🎥', texto: 'Modernas', detalle: '2010+' }
-  ];
-
   const listaGeneros = [
     { emoji: '💥', texto: 'Acción' },
     { emoji: '😂', texto: 'Comedia' },
@@ -40,90 +40,134 @@ function Cuestionario() {
     { emoji: '🔮', texto: 'Fantasía' }
   ];
 
-  // Función para mostrar un resumen al final
-  function verResumen() {
-    if (moodSeleccionado && duracionSeleccionada && epocaSeleccionada && generoSeleccionado) {
-      alert(`¡Cuestionario completado!\n\nMood: ${moodSeleccionado}\nDuración: ${duracionSeleccionada}\nÉpoca: ${epocaSeleccionada}\nGénero: ${generoSeleccionado}\n\n(Próximamente aquí verás películas recomendadas)`);
+  // Funciones de navegación
+  function irSiguiente() {
+    if (pasoActual < 4) {
+      setPasoActual(pasoActual + 1);
     } else {
-      alert('Por favor, responde todas las preguntas');
+      // Último paso - mostrar resumen
+      alert(`¡Cuestionario completado!\n\nMood: ${moodSeleccionado}\nAños: ${aniosSeleccionados.min} - ${aniosSeleccionados.max}\nDuración: ${duracionSeleccionada}\nGénero: ${generoSeleccionado}\n\n(Próximamente verás películas recomendadas)`);
+    }
+  }
+
+  function irAtras() {
+    if (pasoActual > 1) {
+      setPasoActual(pasoActual - 1);
+    }
+  }
+
+  // Verificar si puede avanzar (respuesta seleccionada)
+  function puedeAvanzar() {
+    switch(pasoActual) {
+      case 1: return moodSeleccionado !== '';
+      case 2: return true; // Slider siempre tiene valores
+      case 3: return duracionSeleccionada !== '';
+      case 4: return generoSeleccionado !== '';
+      default: return false;
     }
   }
 
   return (
     <div className="pagina-principal">
+      {/* Barra de progreso */}
+      <div className="wizard-progreso">
+        <div className="progreso-barra">
+          <div 
+            className="progreso-relleno" 
+            style={{ width: `${(pasoActual / 4) * 100}%` }}
+          ></div>
+        </div>
+        <p className="progreso-texto">Paso {pasoActual} de 4</p>
+      </div>
+
       <h1 className="titulo-app">🎬 MoviMood</h1>
-      <p className="descripcion">¡Tu recomendador de películas según tu mood!</p>
       
-      {/* PREGUNTA 1: MOOD */}
-      <div className="seccion-pregunta">
-        <h2>¿Cómo te sientes hoy?</h2>
-        <div className="contenedor-botones">
-          {listaMoods.map((mood) => (
-            <BotonMood 
-              key={mood.texto}
-              emoji={mood.emoji}
-              texto={mood.texto}
-              onClick={() => setMoodSeleccionado(mood.texto)}
-              seleccionado={moodSeleccionado === mood.texto}
-            />
-          ))}
+      {/* Contenedor del paso actual con animación */}
+      <div className="wizard-contenedor" key={pasoActual}>
+        
+        {/* PASO 1: MOOD */}
+        {pasoActual === 1 && (
+          <div className="wizard-paso">
+            <h2>¿Cómo te sientes hoy?</h2>
+            <div className="contenedor-botones">
+              {listaMoods.map((mood) => (
+                <BotonMood 
+                  key={mood.texto}
+                  emoji={mood.emoji}
+                  texto={mood.texto}
+                  onClick={() => setMoodSeleccionado(mood.texto)}
+                  seleccionado={moodSeleccionado === mood.texto}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* PASO 2: AÑOS */}
+      {pasoActual === 2 && (
+  <div className="wizard-paso">
+    <h2>¿De qué años quieres películas?</h2>
+    <SliderAnios 
+      onCambio={setAniosSeleccionados} 
+      valoresIniciales={aniosSeleccionados}
+    />
+  </div>
+)}
+
+        {/* PASO 3: DURACIÓN */}
+        {pasoActual === 3 && (
+          <div className="wizard-paso">
+            <h2>¿Cuánto tiempo tienes?</h2>
+            <div className="contenedor-botones">
+              {listaDuraciones.map((duracion) => (
+                <BotonMood 
+                  key={duracion.texto}
+                  emoji={duracion.emoji}
+                  texto={duracion.texto}
+                  detalle={duracion.detalle}
+                  onClick={() => setDuracionSeleccionada(duracion.texto)}
+                  seleccionado={duracionSeleccionada === duracion.texto}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* PASO 4: GÉNERO */}
+        {pasoActual === 4 && (
+          <div className="wizard-paso">
+            <h2>¿Qué género te apetece?</h2>
+            <div className="contenedor-botones">
+              {listaGeneros.map((genero) => (
+                <BotonMood 
+                  key={genero.texto}
+                  emoji={genero.emoji}
+                  texto={genero.texto}
+                  onClick={() => setGeneroSeleccionado(genero.texto)}
+                  seleccionado={generoSeleccionado === genero.texto}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Botones de navegación */}
+        <div className="wizard-botones">
+          {pasoActual > 1 && (
+            <button className="boton-wizard boton-atras" onClick={irAtras}>
+              ← Atrás
+            </button>
+          )}
+          
+          <button 
+            className="boton-wizard boton-siguiente" 
+            onClick={irSiguiente}
+            disabled={!puedeAvanzar()}
+          >
+            {pasoActual === 4 ? '🎥 Ver Películas' : 'Siguiente →'}
+          </button>
         </div>
       </div>
-
-      {/* PREGUNTA 2: DURACIÓN */}
-      <div className="seccion-pregunta">
-        <h2>¿Cuánto tiempo tienes?</h2>
-        <div className="contenedor-botones">
-          {listaDuraciones.map((duracion) => (
-            <BotonMood 
-              key={duracion.texto}
-              emoji={duracion.emoji}
-              texto={duracion.texto}
-              detalle={duracion.detalle}
-              onClick={() => setDuracionSeleccionada(duracion.texto)}
-              seleccionado={duracionSeleccionada === duracion.texto}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* PREGUNTA 3: ÉPOCA */}
-      <div className="seccion-pregunta">
-        <h2>¿Qué época prefieres?</h2>
-        <div className="contenedor-botones">
-          {listaEpocas.map((epoca) => (
-            <BotonMood 
-              key={epoca.texto}
-              emoji={epoca.emoji}
-              texto={epoca.texto}
-              detalle={epoca.detalle}
-              onClick={() => setEpocaSeleccionada(epoca.texto)}
-              seleccionado={epocaSeleccionada === epoca.texto}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* PREGUNTA 4: GÉNERO */}
-      <div className="seccion-pregunta">
-        <h2>¿Qué género te apetece?</h2>
-        <div className="contenedor-botones">
-          {listaGeneros.map((genero) => (
-            <BotonMood 
-              key={genero.texto}
-              emoji={genero.emoji}
-              texto={genero.texto}
-              onClick={() => setGeneroSeleccionado(genero.texto)}
-              seleccionado={generoSeleccionado === genero.texto}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* BOTÓN PARA VER RECOMENDACIONES */}
-      <button className="boton-ver-peliculas" onClick={verResumen}>
-        🎥 Ver Recomendaciones
-      </button>
       
       <p className="nombre-autora">Por Nicole Beeckmans</p>
     </div>

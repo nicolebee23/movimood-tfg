@@ -148,3 +148,100 @@
 .boton-ver-peliculas:active {
   transform: translateY(-2px) scale(1.02);
 }
+/* Wizard - Barra de progreso */
+.wizard-progreso {
+  max-width: 600px;
+  margin: 0 auto 40px;
+}
+
+.progreso-barra {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progreso-relleno {
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.4s ease;
+  border-radius: 10px;
+}
+
+.progreso-texto {
+  text-align: center;
+  color: white;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Contenedor del wizard */
+.wizard-contenedor {
+  animation: fadeInSlide 0.4s ease-out;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.wizard-paso {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Botones de navegación del wizard */
+.wizard-botones {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.boton-wizard {
+  padding: 15px 40px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.boton-atras {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+}
+
+.boton-atras:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.boton-siguiente {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.boton-siguiente:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+}
+
+.boton-siguiente:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
